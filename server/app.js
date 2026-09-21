@@ -8,9 +8,14 @@ const aiRoutes = require('./routes/ai.routes');
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-}));
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173',
+      'https://health-chatbot-1-4sw5.onrender.com',
+    ],
+  }),
+);
 
 app.use(express.json());
 
