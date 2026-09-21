@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 function AssessmentForm({ onSubmit }) {
-  // Store the patient's basic details and symptom information before submission.
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
   const [bloodGroup, setBloodGroup] = useState('');
@@ -9,10 +8,66 @@ function AssessmentForm({ onSubmit }) {
   const [duration, setDuration] = useState('');
   const [severity, setSeverity] = useState(5);
   const [additionalInformation, setAdditionalInformation] = useState('');
+  const [error, setError] = useState('');
 
-  // Send the completed questionnaire to the parent component for assessment processing.
+  const validateForm = () => {
+    const numericAge = Number(age);
+    const numericSeverity = Number(severity);
+
+    if (!age) {
+      return 'Please enter your age.';
+    }
+
+    if (!Number.isInteger(numericAge) || numericAge < 1 || numericAge > 120) {
+      return 'Age must be a whole number between 1 and 120.';
+    }
+
+    if (!gender) {
+      return 'Please select your gender.';
+    }
+
+    if (!bloodGroup) {
+      return 'Please select your blood group.';
+    }
+
+    if (!symptoms.trim()) {
+      return 'Please describe your symptoms.';
+    }
+
+    if (symptoms.trim().length < 3) {
+      return 'Symptoms must contain at least 3 characters.';
+    }
+
+    if (!duration.trim()) {
+      return 'Please enter the symptom duration.';
+    }
+
+    if (
+      !Number.isInteger(numericSeverity) ||
+      numericSeverity < 1 ||
+      numericSeverity > 10
+    ) {
+      return 'Severity must be between 1 and 10.';
+    }
+
+    if (additionalInformation && additionalInformation.trim().length > 2000) {
+      return 'Additional information cannot exceed 2000 characters.';
+    }
+
+    return '';
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const validationError = validateForm();
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setError('');
 
     onSubmit({
       age,
@@ -27,43 +82,50 @@ function AssessmentForm({ onSubmit }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Demographic information helps provide context for the medical assessment. */}
+      {error && <div className='error'>{error}</div>}
+
       <div>
-        <label>Age</label>
-        <br />
+        <label htmlFor='age'>Age</label>
+
         <input
+          id='age'
           type='number'
+          min='1'
+          max='120'
           value={age}
           onChange={(event) => setAge(event.target.value)}
+          placeholder='Enter your age'
         />
       </div>
 
-      <br />
-
       <div>
-        <label>Gender</label>
-        <br />
+        <label htmlFor='gender'>Gender</label>
+
         <select
+          id='gender'
           value={gender}
           onChange={(event) => setGender(event.target.value)}
         >
           <option value=''>Select gender</option>
+
           <option value='male'>Male</option>
+
           <option value='female'>Female</option>
+
           <option value='other'>Other</option>
         </select>
       </div>
 
-      <br />
-
       <div>
-        <label>Blood Group</label>
-        <br />
+        <label htmlFor='bloodGroup'>Blood Group</label>
+
         <select
+          id='bloodGroup'
           value={bloodGroup}
           onChange={(event) => setBloodGroup(event.target.value)}
         >
           <option value=''>Select blood group</option>
+
           <option value='A+'>A+</option>
           <option value='A-'>A-</option>
           <option value='B+'>B+</option>
@@ -75,26 +137,23 @@ function AssessmentForm({ onSubmit }) {
         </select>
       </div>
 
-      <br />
-
-      {/* Symptoms section: collect a free-text description of the patient's reported issue(s). */}
       <div>
-        <label>Symptoms</label>
-        <br />
+        <label htmlFor='symptoms'>Symptoms</label>
+
         <textarea
+          id='symptoms'
           value={symptoms}
           onChange={(event) => setSymptoms(event.target.value)}
           placeholder='Describe your symptoms...'
+          rows='4'
         />
       </div>
 
-      <br />
-
-      {/* Duration section: capture how long the symptoms have been present to help contextualize the assessment. */}
       <div>
-        <label>How long have you had these symptoms?</label>
-        <br />
+        <label htmlFor='duration'>How long have you had these symptoms?</label>
+
         <input
+          id='duration'
           type='text'
           value={duration}
           onChange={(event) => setDuration(event.target.value)}
@@ -102,13 +161,11 @@ function AssessmentForm({ onSubmit }) {
         />
       </div>
 
-      <br />
-
-      {/* Self-reported severity allows the user to rate discomfort on a scale from 1 to 10. */}
       <div>
-        <label>Severity: {severity}/10</label>
-        <br />
+        <label htmlFor='severity'>Severity: {severity}/10</label>
+
         <input
+          id='severity'
           type='range'
           min='1'
           max='10'
@@ -117,20 +174,17 @@ function AssessmentForm({ onSubmit }) {
         />
       </div>
 
-      <br />
-
-      {/* Additional context can help the assessment model interpret the case more accurately. */}
       <div>
-        <label>Additional Information</label>
-        <br />
+        <label htmlFor='additionalInformation'>Additional Information</label>
+
         <textarea
+          id='additionalInformation'
           value={additionalInformation}
           onChange={(event) => setAdditionalInformation(event.target.value)}
           placeholder='Anything else you think is important...'
+          rows='4'
         />
       </div>
-
-      <br />
 
       <button type='submit'>Start Assessment</button>
     </form>

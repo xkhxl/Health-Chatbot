@@ -11,26 +11,37 @@ const assessmentSchema = new mongoose.Schema(
     age: {
       type: Number,
       required: true,
+      min: 1,
+      max: 120,
     },
 
     gender: {
       type: String,
       required: true,
+      enum: ['male', 'female', 'other'],
+      lowercase: true,
+      trim: true,
     },
 
     bloodGroup: {
       type: String,
       required: true,
+      enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
     },
 
     symptoms: {
       type: String,
       required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 1000,
     },
 
     duration: {
       type: String,
       required: true,
+      trim: true,
+      maxlength: 100,
     },
 
     severity: {
@@ -42,6 +53,8 @@ const assessmentSchema = new mongoose.Schema(
 
     additionalInformation: {
       type: String,
+      trim: true,
+      maxlength: 2000,
       default: '',
     },
 
@@ -52,7 +65,7 @@ const assessmentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Assessment = mongoose.model('Assessment', assessmentSchema);
